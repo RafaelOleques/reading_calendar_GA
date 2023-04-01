@@ -1,7 +1,7 @@
 from audioop import avg
 import random
 import copy
-
+import math
 
 def chaptersWithPages(fileName):
     f = open(fileName, "r", encoding="utf-8")
@@ -15,15 +15,26 @@ def chaptersWithPages(fileName):
         title = lineList[0]
         pages = lineList[1].split(",")
         
-        chapterNumber.append(int(pages[1]) - int(pages[0]))
+        chapterNumber.append(1 + int(pages[1]) - int(pages[0]))
         chapter.append(title)
     return chapterNumber, chapter
 
-chapterNumber, chapterTitle = chaptersWithPages("cap.txt")
-numberChapters = len(chapterNumber)
+chapterPages, chapterTitle = chaptersWithPages("cap.txt")
+numberChapters = len(chapterPages)
+splitChapters = [False for i in range(0,numberChapters)]
+removeFitnessPage = 0
 KEYS = 0
 PAGES = 1
+NO_CAP = -1
+NO_PAGE = 0
 
+def remove_number_pages_fitness(number_of_days):
+    remove = number_of_days - len(chapterPages)
+
+    if(remove < 0):
+        return 0
+    
+    return remove
 
 #Alterado
 def evaluate(individual):
@@ -35,21 +46,21 @@ def evaluate(individual):
     :param individual:list
     :return:int numero de ataques entre rainhas no individuo recebido
     """
-
-    '''fitness = 0
-    minGene = min(individual[PAGES])
-
-    for gene in individual[PAGES]:          
-        fitness += gene - minGene
-    '''
+    global removeFitnessPage 
+    totalPages = len(individual[PAGES]) - removeFitnessPage
 
     #Variance
     fitness = 0
-    avgGene = sum(individual[PAGES])/len(individual[PAGES])
 
-    for gene in individual[PAGES]:          
+    avgGene = sum(individual[PAGES])/totalPages
+
+    for gene in individual[PAGES]:    
+        if(gene == NO_PAGE):
+            continue
+
         fitness += pow((gene - avgGene), 2)
-    return fitness/len(individual[PAGES])
+
+    return fitness/totalPages
 
 #Ok
 def tournament(participants):
@@ -66,7 +77,6 @@ def tournament(participants):
             best_participant = participant
 
     return best_participant
-
 
 def crossover(parent1, parent2, index):
     """
@@ -89,6 +99,80 @@ def crossover(parent1, parent2, index):
     
     return parent1, parent2
 
+def dislocateChapter(individual):
+    """
+    Auxiliar function to mutate
+    """
+    for i in range(0, len(individual[KEYS])):
+
+        if(individual[KEYS][i] == NO_CAP):
+            break
+
+        if not isinstance(individual[KEYS][i], list):
+            continue
+        
+        prob = random.random()
+        change = random.random()
+
+        if change < 0.4:
+            continue
+        
+        #Troca um capítulo de dia
+        #Passa para a direita
+        if prob > 0.5 and i < len(individual[KEYS])-1 and isinstance(individual[KEYS][i], list) and len(individual[KEYS][i]) > 0:
+            page = max(individual[KEYS][i])
+
+            individual[KEYS][i].remove(page)
+            individual[PAGES][i] -= chapterPages[page]
+
+            if isinstance(individual[KEYS][i+1], list):
+                individual[KEYS][i+1].insert(0, page)
+                individual[PAGES][i+1] += chapterPages[page]
+            else:
+                individual[KEYS][i+1] = [page, individual[KEYS][i+1]]
+                individual[PAGES][i+1] += chapterPages[page]
+        #Passa para a esquerda
+        elif i > 0 and isinstance(individual[KEYS][i], list)  and len(individual[KEYS][i]) > 0 :
+            page = min(individual[KEYS][i])
+
+            individual[KEYS][i].remove(page)
+            individual[PAGES][i] -= chapterPages[page]
+
+            if isinstance(individual[KEYS][i-1], list):
+                individual[KEYS][i-1].append(page)
+                individual[PAGES][i-1] += chapterPages[page]
+            else:
+                individual[KEYS][i-1] = [individual[KEYS][i-1], page]
+                individual[PAGES][i-1] += chapterPages[page]
+        else:
+            continue
+
+        #Dividi um capítulo no meio
+
+        if(len(individual[KEYS][i]) == 1):
+            individual[KEYS][i] = individual[KEYS][i][0]
+
+        break
+    return individual
+
+def splitChapter(individual):
+    return individual
+    '''prob = random.random()
+
+    if prob < 0.6:
+        return individual
+    
+    biggestChapter = 0
+    dayBiggestChapter = 0
+    numberPages = -1
+
+    for day in range(0, len(individual[KEYS])):
+        if isinstance(individual[KEYS][day], list):
+            for caps in individual[KEYS][day]:
+                if()
+                individual[KEYS][day].insert(0, page)
+                individual[PAGES][day] += chapterNumber[page]'''
+
 #Alterado
 def mutate(individual, m):
     """
@@ -103,53 +187,25 @@ def mutate(individual, m):
     if random.random() >= m:
         return individual
 
-    for i in range(0, len(individual[KEYS])):
-        if not isinstance(individual[KEYS][i], list):
-            continue
-        
-        prob = random.random()
-        change = random.random()
+    mutate_individual = dislocateChapter(individual)
+    mutate_individual = splitChapter(mutate_individual)
 
-        if change < 0.4:
-            continue
-        
-        if prob > 0.5 and i < len(individual[KEYS])-1 and isinstance(individual[KEYS][i], list):
-            page = max(individual[KEYS][i])
-            individual[KEYS][i].remove(page)
-            individual[PAGES][i] -= chapterNumber[page]
+    return mutate_individual
 
-            if isinstance(individual[KEYS][i+1], list):
-                individual[KEYS][i+1].insert(0, page)
-                individual[PAGES][i+1] += chapterNumber[page]
-            else:
-                individual[KEYS][i+1] = [page, individual[KEYS][i+1]]
-                individual[PAGES][i+1] += chapterNumber[page]
-        elif i > 0 and isinstance(individual[KEYS][i], list):
-            page = min(individual[KEYS][i])
-            individual[KEYS][i].remove(page)
-            individual[PAGES][i] -= chapterNumber[page]
+def complete_individual(number_of_days, keyList, pageList):
+    while(len(keyList) < number_of_days):
+        keyList.append(NO_CAP)
+        pageList.append(NO_PAGE)
 
-            if isinstance(individual[KEYS][i-1], list):
-                individual[KEYS][i-1].append(page)
-                individual[PAGES][i-1] += chapterNumber[page]
-            else:
-                individual[KEYS][i-1] = [individual[KEYS][i-1], page]
-                individual[PAGES][i-1] += chapterNumber[page]
-        else:
-            continue
-
-        if(len(individual[KEYS][i]) == 1):
-            individual[KEYS][i] = individual[KEYS][i][0]
-
-        break
-
-    return individual
+    return keyList
 
 #Alterado
 def generate_individual(number_of_days):
-    keyList = [i for i in range(0, len(chapterNumber))]
+    keyList = [i for i in range(0, len(chapterPages))]
 
-    pageList = copy.deepcopy(chapterNumber)
+    pageList = copy.deepcopy(chapterPages)
+
+    keyList = complete_individual(number_of_days, keyList, pageList)
 
     while(len(keyList) != number_of_days):
         index = random.randint(1, len(keyList)-1)
@@ -175,6 +231,39 @@ def generate_individual(number_of_days):
 
         del keyList[index]
         del pageList[index]
+    
+    return [keyList, pageList]
+
+#Divisão distribuida igualiária
+def generate_individual_equal(number_of_days):
+    keyList = []
+    pageList = []
+
+    caps = [i for i in range(0, len(chapterPages))]
+    pagesCap = copy.deepcopy(chapterPages)
+
+    capsDay = len(caps)/number_of_days
+    
+    for day in range(0, number_of_days):
+        keyList.append([])
+        totalPagesAux = 0
+
+        for idCap in range(0, math.floor(capsDay)):
+            keyList[-1].append(caps[0])
+            totalPagesAux += pagesCap[0]
+            del caps[0]
+            del pagesCap[0]
+
+        pageList.append(totalPagesAux)   
+    
+    totalPagesAux = pageList[-1]
+    while(len(caps) > 0):
+        keyList[-1].append(caps[0])
+        totalPagesAux += pagesCap[0]
+        del caps[0]
+        del pagesCap[0]   
+    
+    pageList[-1] = totalPagesAux
     
     return [keyList, pageList]
 
@@ -208,7 +297,6 @@ def selecao(individuals, k):
     
     return top(part, 2)
 
-
 def run_ga(g, n, k, m, e, number_of_days, graph=False):
     """
     Executa o algoritmo genético e retorna o indivíduo com o menor número de ataques entre rainhas
@@ -219,11 +307,16 @@ def run_ga(g, n, k, m, e, number_of_days, graph=False):
     :param e:bool - se vai haver elitismo
     :return:list - melhor individuo encontrado
     """
+    global removeFitnessPage 
+    removeFitnessPage = remove_number_pages_fitness(number_of_days)
+
     max_fit = []
     min_fit = []
     avarage_fit = []
     
     individuals = [generate_individual(number_of_days) for i in range(0, n)]
+    individuals.append(generate_individual_equal(number_of_days))
+
     new_individuals = []
     cont = 0
 
@@ -277,26 +370,30 @@ def run_ga(g, n, k, m, e, number_of_days, graph=False):
     else:
         return top(individuals, 1)
 
-def the_best(number_of_days):
-    best_fit = 10000
+def the_best(number_of_days, number_of_cycles):
+    positive_infinity = float('inf')
+    best_fit = positive_infinity
     n_bests = 0
     list_bests = []
+    best_individuals = []
+    best_inf_graph = []
 
     times_dont_change = 0
 
-    while(times_dont_change <= 20):
-        g, n = random.randint(50,100), random.randint(16,100)
+    while(times_dont_change <= number_of_cycles):
+        g, n = random.randint(70,150), random.randint(70,100)
         if n >= 5:
             k = random.randint(2,5)
         else:
             k = random.randint(1,n)
         
-        m, e = random.random(), True
+        m, e = random.uniform(0.87, 1), True
 
-        individuals = run_ga(g, n, k, m, e, number_of_days)
+        individuals, inf_graph = run_ga(g, n, k, m, e, number_of_days, True)
         actual = evaluate(individuals)
 
         if(actual < best_fit):
+            best_individuals, best_inf_graph = individuals, inf_graph
             list_bests = [g, n, k, m, e]
             n_bests += 1
             best_fit = actual
@@ -305,7 +402,7 @@ def the_best(number_of_days):
         else:
             times_dont_change += 1
 
-    return list_bests, best_fit
+    return list_bests, best_fit, best_individuals, best_inf_graph
 
 '''if __name__ == '__main__':
     number_of_days = 26

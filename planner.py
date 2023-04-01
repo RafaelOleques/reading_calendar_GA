@@ -19,7 +19,7 @@ def leCapitulos(caps_file_name):
     
     return lines
 
-def geraDocx(file_name, caps_file_name, day, month, year):
+def geraDocx(file_name, book_title, author, weekendMessage, caps_file_name, skipWeekend, day, month, year):
     # Create an instance of a word document
     doc = docx.Document()
 
@@ -29,7 +29,7 @@ def geraDocx(file_name, caps_file_name, day, month, year):
     paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add a Title to the document
-    title = title.add_run('O Homem Invisível \nH. G. Wells', 0)
+    title = title.add_run(book_title + '\n' + author, 0)
 
     #Font size
     title.font.size = Pt(20)
@@ -37,11 +37,6 @@ def geraDocx(file_name, caps_file_name, day, month, year):
     # Table data in a form of list
     #data = geraListaCapitulos(28)
     data = leCapitulos(caps_file_name)
-    '''data = (
-        (1, 'Geek 1'),
-        (2, 'Geek 2'),
-        (3, 'Geek 3')
-    )'''
     
     # Creating a table object
     table = doc.add_table(rows=1, cols=3)
@@ -67,11 +62,25 @@ def geraDocx(file_name, caps_file_name, day, month, year):
     current_date = datetime.datetime(year, month, day) - datetime.timedelta(days=1)
 
     for cap in data:
+        #update day
+        current_date = current_date + datetime.timedelta(days=1)
+
+        #skip weekend
+        while(skipWeekend and current_date.weekday() >= 5):
+            # Adding a row and then adding data in it.
+            row = table.add_row().cells
+
+            row[DATE].text = current_date.strftime("%d/%m/%y") 
+            row[CAP].text = weekendMessage
+            row[STATUS].text = NONE
+
+            table.rows[-1].height = Cm(ROW_HEIGHT)
+
+            current_date = current_date + datetime.timedelta(days=1)
+
         # Adding a row and then adding data in it.
         row = table.add_row().cells
 
-        #update day
-        current_date = current_date + datetime.timedelta(days=1)
         # Converting id to string as table can only take string input
         row[DATE].text = current_date.strftime("%d/%m/%y") 
         row[CAP].text = cap
@@ -84,12 +93,3 @@ def geraDocx(file_name, caps_file_name, day, month, year):
     
     # Now save the document to a location
     doc.save(file_name+'.docx')
-
-'''if __name__ == "__main__":
-    file_name = "Planner - Homem Invisível"
-    caps_file_name = "readme.txt"
-    start_day = 1
-    start_month = 2
-    start_year = 2022
-
-    geraDocx(file_name, caps_file_name, start_day, start_month, start_year)'''
