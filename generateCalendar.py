@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class GenerateCalendar:
 
-    def __init__(self, number_of_days, showNumberPages = True, ):
+    def __init__(self, number_of_days, showNumberPages = True):
         self.number_of_days = number_of_days
         self.pages, self.titles = chaptersWithPages("cap.txt")
         self.showNumberPages = showNumberPages
