@@ -92,4 +92,4 @@ def geraDocx(file_name, book_title, author, weekendMessage, caps_file_name, skip
     table.style = 'Table Grid'
     
     # Now save the document to a location
-    doc.save(file_name+'.docx')
+    doc.save(f"output/{file_name}.docx")

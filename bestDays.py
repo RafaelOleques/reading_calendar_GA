@@ -19,7 +19,7 @@ def chaptersWithPages(fileName):
         chapter.append(title)
     return chapterNumber, chapter
 
-chapterPages, chapterTitle = chaptersWithPages("cap.txt")
+chapterPages, chapterTitle = chaptersWithPages("input/cap.txt")
 numberChapters = len(chapterPages)
 splitChapters = [False for i in range(0,numberChapters)]
 removeFitnessPage = 0

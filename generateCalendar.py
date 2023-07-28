@@ -8,7 +8,7 @@ class GenerateCalendar:
 
     def __init__(self, number_of_days, showNumberPages = True):
         self.number_of_days = number_of_days
-        self.pages, self.titles = chaptersWithPages("cap.txt")
+        self.pages, self.titles = chaptersWithPages("input/cap.txt")
         self.showNumberPages = showNumberPages
     
     def search_dynamic_parameters(self, number_of_cycles):
@@ -110,7 +110,7 @@ class GenerateCalendar:
             
         return goals_list
 
-    def split_goals(self, max_caps_day, split_symbol = "↑"):
+    def split_goals(self, max_caps_day, split_symbol = "↑", number_with_symbol=False):
         TITLE = 0
         CAP = 1
 
@@ -132,12 +132,17 @@ class GenerateCalendar:
             
             # Chapter and division information
             if(chapters_calculated[max_idx][CAP] > max_caps_day):
-                titulo = chapters_calculated[max_idx][TITLE]
+                title = chapters_calculated[max_idx][TITLE]
                 chapters_calculated[max_idx][CAP] = chapters_calculated[max_idx][CAP]/2
             
                 # Insert the division
-                chapters_calculated.insert(max_idx+1, [titulo, chapters_calculated[max_idx][CAP]])
-                splited_goals.insert(max_idx+1, [titulo, split_symbol])
+                chapters_calculated.insert(max_idx+1, [title, chapters_calculated[max_idx][CAP]])
+
+                splited_goals.insert(max_idx+1, [title, split_symbol])
+
+        for idx, chapter in enumerate(chapters_calculated):
+            if number_with_symbol:
+                splited_goals[idx][CAP] = f"{splited_goals[idx][CAP]} ({chapter[CAP]})"            
 
         self.goals = splited_goals
 
@@ -155,11 +160,14 @@ class GenerateCalendar:
             capitulos_divididos_string = [" | ".join(capitulo[TITLE]) + "\n" for capitulo in self.goals]
 
         return capitulos_divididos_string
+    
 
     def create_docx(self, file_name, title, author, weekendMessage, caps_file_name, skipWeekend, start_day, start_month, start_year):
-        with open('readme.txt', 'w', encoding='utf-8') as f:
+        path_caps_file_name = f'output/{caps_file_name}'
+        
+        with open(path_caps_file_name, 'w', encoding='utf-8') as f:
             f.writelines(self.list_of_goals())
         f.close()
 
-        geraDocx(file_name, title, author, weekendMessage, caps_file_name, skipWeekend, start_day, start_month, start_year)
+        geraDocx(file_name, title, author, weekendMessage, path_caps_file_name, skipWeekend, start_day, start_month, start_year)
 
