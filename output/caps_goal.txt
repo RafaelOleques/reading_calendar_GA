@@ -1,46 +1,24 @@
-Canto 10 | 22 (11.0)
-Canto 10 | ↑ (11.0)
-Canto 11 | 30 (7.5)
-Canto 11 | ↑ (7.5)
-Canto 11 | ↑ (7.5)
-Canto 11 | ↑ (7.5)
-Canto 12 | 17 (8.5)
-Canto 12 | ↑ (8.5)
-Canto 13 | 30 (7.5)
-Canto 13 | ↑ (7.5)
-Canto 13 | ↑ (7.5)
-Canto 13 | ↑ (7.5)
-Canto 14 | 18 (9.0)
-Canto 14 | ↑ (9.0)
-Canto 15 | 28 (7.0)
-Canto 15 | ↑ (7.0)
-Canto 15 | ↑ (7.0)
-Canto 15 | ↑ (7.0)
-Canto 16 | 32 (8.0)
-Canto 16 | ↑ (8.0)
-Canto 16 | ↑ (8.0)
-Canto 16 | ↑ (8.0)
-Canto 17 | 29 (7.25)
-Canto 17 | ↑ (7.25)
-Canto 17 | ↑ (7.25)
-Canto 17 | ↑ (7.25)
-Canto 18 | 22 (11.0)
-Canto 18 | ↑ (11.0)
-Canto 19 | 15 (7.5)
-Canto 19 | ↑ (7.5)
-Canto 20 | 19 (9.5)
-Canto 20 | ↑ (9.5)
-Canto 21 | 23 (5.75)
-Canto 21 | ↑ (5.75)
-Canto 21 | ↑ (5.75)
-Canto 21 | ↑ (5.75)
-Canto 22 | 20 (10.0)
-Canto 22 | ↑ (10.0)
-Canto 23 | 33 (8.25)
-Canto 23 | ↑ (8.25)
-Canto 23 | ↑ (8.25)
-Canto 23 | ↑ (8.25)
-Canto 24 | 30 (7.5)
-Canto 24 | ↑ (7.5)
-Canto 24 | ↑ (7.5)
-Canto 24 | ↑ (7.5)
+Primeira parte | I | 10
+II | III | IV | 16
+V | Segunda parte | VI | VII | 14
+VIII | IX | X | XI | XII | XIII | XIV | 17
+XV | 15
+XVI | XVII | 11
+XVIII | XIX | XX | XXI | XXII | 16
+XXIII | XXIV | XXV | XXVI | 9
+XXVII | XXVIII | XXIX | 10
+XXX | XXXI | 4
+XXXII | 3
+XXXIII | 8
+XXXIV | 7
+XXXV | XXXVI | XXXVII | XXXVIII | 19
+XXXIX | 22
+XL | XLI | 7
+XLII | XLIII | XLIV | XLV | 18
+XLVI | 13
+XLVII | XLVIII | XLIX | 13
+L | LI | 4
+LII | LIII | LIV | LV | 22
+LVI | Terceira parte | LVII | LVIII | LIX | LX | 23
+LXI | LXII | LXIII | LXIV | LXV | 23
+LXVI | Carta | 7
